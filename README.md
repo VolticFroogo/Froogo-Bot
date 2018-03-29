@@ -1,1 +1,2 @@
-# Finland-Bot
+# Froogo Bot
+This is Froogo's Discord bot that just does random stuff like sending cat pictures and memes. I plan to intergrate this with my [Chat App](https://github.com/VolticFroogo/Chat-App) in the future so it works perfectly. Not that anyone would use that feature but it's just something I want to add for the fun of it.

@@ -9,6 +9,7 @@ import (
 // Meme is a meme.
 type Meme struct {
 	Command, Title, Description, Image, EmbedDescription string
+	Color                                                int
 }
 
 var (
@@ -27,19 +28,20 @@ func Init(setPrefix string) {
 
 	Memes = make(map[string]Meme)
 
-	Memes[">meme no u"] = Meme{
-		Command:          ">meme no u",
+	Memes[prefix+"meme no u"] = Meme{
+		Command:          prefix + "meme no u",
 		Title:            "No U",
 		Description:      "The No U trap card.",
 		EmbedDescription: "The No U trap card has been activated.",
 		Image:            "https://pics.me.me/trap-no-u-trap-card-ysii-en014-negate-the-effect-29426981.png",
+		Color:            0xB23C84,
 	}
 }
 
 // RunMeme runs the meme's embed message.
 func (meme Meme) RunMeme(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
-		Color: 0xB23C84,
+		Color: meme.Color,
 		Author: &discordgo.MessageEmbedAuthor{
 			Name:    m.Author.Username,
 			IconURL: m.Author.AvatarURL(""),
@@ -50,7 +52,7 @@ func (meme Meme) RunMeme(s *discordgo.Session, m *discordgo.MessageCreate) {
 			URL: meme.Image,
 		},
 		Footer: &discordgo.MessageEmbedFooter{
-			Text: "Finland Bot by Froogo.",
+			Text: "Froogo Bot by Harry.",
 		},
 	})
 }
@@ -76,7 +78,7 @@ func Help(s *discordgo.Session, m *discordgo.MessageCreate) {
 			},
 		},
 		Footer: &discordgo.MessageEmbedFooter{
-			Text: "Finland Bot by Froogo.",
+			Text: "Froogo Bot by Harry.",
 		},
 	})
 }
@@ -94,7 +96,7 @@ func Run(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if strings.ToLower(m.Content) == prefix+"meme" {
-		Help(s, m) // They ran >meme show some help.
+		Help(s, m) // They ran meme show some help.
 		return
 	}
 
@@ -116,7 +118,7 @@ func list(s *discordgo.Session, m *discordgo.MessageCreate) {
 		Title:       "List of Memes",
 		Description: list,
 		Footer: &discordgo.MessageEmbedFooter{
-			Text: "Finland Bot by Froogo.",
+			Text: "Froogo Bot by Harry.",
 		},
 	})
 }
@@ -131,7 +133,7 @@ func unknownMeme(s *discordgo.Session, m *discordgo.MessageCreate) {
 		Title:       "I don't know that meme",
 		Description: "I haven't heard of that meme before, if you want it adding message Froogo and if he can be bothered he'll add it for you.\n\nFor a list of memes type in: `" + prefix + "meme list`.",
 		Footer: &discordgo.MessageEmbedFooter{
-			Text: "Finland Bot by Froogo.",
+			Text: "Froogo Bot by Harry.",
 		},
 	})
 }
