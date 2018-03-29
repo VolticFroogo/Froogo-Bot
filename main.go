@@ -8,6 +8,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/VolticFroogo/Finland-Bot/help"
 	"github.com/VolticFroogo/Finland-Bot/meme"
 	"github.com/bwmarrin/discordgo"
 )
@@ -41,6 +42,7 @@ func main() {
 	dg.AddHandler(messageCreate)
 	dg.AddHandler(guildMemberAdd)
 	dg.UpdateStatus(0, prefix+"help")
+	help.Init(prefix)
 	meme.Init(prefix)
 
 	// Wait here until CTRL-C or other term signal is received.
@@ -60,10 +62,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if strings.HasPrefix(m.Content, prefix) {
-		if strings.HasPrefix(m.Content, prefix+"meme") {
+		if strings.HasPrefix(strings.ToLower(m.Content), prefix+"meme") {
 			meme.Run(s, m)
-		} else if strings.HasPrefix(m.Content, prefix+"help") {
-			meme.Help(s, m)
+		} else if strings.HasPrefix(strings.ToLower(m.Content), prefix+"help") {
+			help.Run(s, m)
 		}
 	}
 }

@@ -13,11 +13,15 @@ type Meme struct {
 
 var (
 	prefix string
+
 	// Memes is a slice of meme.
 	Memes map[string]Meme
+
+	// Description of the meme package.
+	Description = "An easy way to show some dank memes."
 )
 
-// Init sets the variables needed for the meme package.
+// Init sets the variables needed for the meme package and runs some initialization scripts.
 func Init(setPrefix string) {
 	prefix = setPrefix
 
@@ -41,7 +45,7 @@ func (meme Meme) RunMeme(s *discordgo.Session, m *discordgo.MessageCreate) {
 			IconURL: m.Author.AvatarURL(""),
 		},
 		Title:       meme.Title,
-		Description: meme.Description,
+		Description: meme.EmbedDescription,
 		Image: &discordgo.MessageEmbedImage{
 			URL: meme.Image,
 		},
@@ -63,7 +67,7 @@ func Help(s *discordgo.Session, m *discordgo.MessageCreate) {
 		Description: "The meme feature allows you to easily send dank memes in Finland.",
 		Fields: []*discordgo.MessageEmbedField{
 			&discordgo.MessageEmbedField{
-				Name:  "Find memes",
+				Name:  "Find Memes",
 				Value: "To find some memes just run `" + prefix + "meme list` and it will respond with a list of memes.",
 			},
 			&discordgo.MessageEmbedField{
@@ -79,14 +83,22 @@ func Help(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 // Run chooses the meme function to run and then runs it.
 func Run(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if meme, ok := Memes[m.Content]; ok {
-		meme.RunMeme(s, m)
+	if meme, ok := Memes[strings.ToLower(m.Content)]; ok {
+		meme.RunMeme(s, m) // Run the meme they asked for.
 		return
 	}
 
-	if strings.HasPrefix(m.Content, prefix+"meme list") {
-		list(s, m)
+	if strings.HasPrefix(strings.ToLower(m.Content), prefix+"meme list") {
+		list(s, m) // Show the list of memes.
+		return
 	}
+
+	if strings.ToLower(m.Content) == prefix+"meme" {
+		Help(s, m) // They ran >meme show some help.
+		return
+	}
+
+	unknownMeme(s, m) // Don't know what they want to see.
 }
 
 func list(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -103,6 +115,21 @@ func list(s *discordgo.Session, m *discordgo.MessageCreate) {
 		},
 		Title:       "List of Memes",
 		Description: list,
+		Footer: &discordgo.MessageEmbedFooter{
+			Text: "Finland Bot by Froogo.",
+		},
+	})
+}
+
+func unknownMeme(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
+		Color: 0x003580,
+		Author: &discordgo.MessageEmbedAuthor{
+			Name:    m.Author.Username,
+			IconURL: m.Author.AvatarURL(""),
+		},
+		Title:       "I don't know that meme",
+		Description: "I haven't heard of that meme before, if you want it adding message Froogo and if he can be bothered he'll add it for you.\n\nFor a list of memes type in: `" + prefix + "meme list`.",
 		Footer: &discordgo.MessageEmbedFooter{
 			Text: "Finland Bot by Froogo.",
 		},
