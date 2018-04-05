@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"strings"
@@ -42,10 +43,20 @@ func main() {
 
 	dg.AddHandler(messageCreate)
 	dg.AddHandler(guildMemberAdd)
-	dg.UpdateStatus(0, prefix+"help")
-	cat.Init(prefix)
+	err = dg.UpdateStatus(0, prefix+"help")
+	if err != nil {
+		log.Printf("Setting status error: %v", err)
+	}
+
 	help.Init(prefix)
-	meme.Init(prefix)
+	err = meme.Init(prefix)
+	if err != nil {
+		log.Printf("Initializing meme error: %v", err)
+	}
+	err = cat.Init(prefix)
+	if err != nil {
+		log.Printf("Initializing cat error: %v", err)
+	}
 
 	// Wait here until CTRL-C or other term signal is received.
 	fmt.Println("Froogo Bot is now running. Press CTRL-C to exit.")
@@ -63,8 +74,15 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return // Ignore the message if it was sent by the bot.
 	}
 
+	if m.Author.Bot {
+		return // Ignore the message if it was sent by a bot.
+	}
+
 	if strings.HasPrefix(m.Content, prefix) {
-		s.ChannelMessageDelete(m.ChannelID, m.ID)
+		err := s.ChannelMessageDelete(m.ChannelID, m.ID)
+		if err != nil {
+			log.Printf("Deleting command message error: %v", err)
+		}
 
 		if strings.HasPrefix(strings.ToLower(m.Content), prefix+"meme") {
 			meme.Run(s, m)
@@ -79,11 +97,17 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func guildMemberAdd(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
+	var err error
+
 	if m.GuildID == "428661403935571981" { // If we're in Finland.
-		s.GuildMemberRoleAdd(m.GuildID, m.User.ID, "428665344173932561") // Gives user the peasant role.
+		err = s.GuildMemberRoleAdd(m.GuildID, m.User.ID, "428665344173932561") // Gives user the peasant role.
 	} else if m.GuildID == "371742166432743444" { // If we're in Sloth Stream.
-		s.GuildMemberRoleAdd(m.GuildID, m.User.ID, "371743291311521803") // Gives user the member role.
+		err = s.GuildMemberRoleAdd(m.GuildID, m.User.ID, "371743291311521803") // Gives user the member role.
 	} else if m.GuildID == "428993299496435732" { // If we're in OJH Designs.
-		s.GuildMemberRoleAdd(m.GuildID, m.User.ID, "429005223294402561") // Gives user the member role.
+		err = s.GuildMemberRoleAdd(m.GuildID, m.User.ID, "429005223294402561") // Gives user the member role.
+	}
+
+	if err != nil {
+		log.Printf("Adding role on join error: %v", err)
 	}
 }

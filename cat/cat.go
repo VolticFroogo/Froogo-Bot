@@ -1,7 +1,10 @@
 package cat
 
 import (
+	"encoding/gob"
+	"log"
 	"math/rand"
+	"os"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -23,57 +26,17 @@ var (
 )
 
 // Init sets the variables needed for the help package and runs some initialization scripts.
-func Init(setPrefix string) {
+func Init(setPrefix string) (err error) {
 	rand.Seed(time.Now().Unix())
 	prefix = setPrefix
 
-	Pictures = append(Pictures, Picture{
-		Title:            "Dori",
-		EmbedDescription: "Harry's Cat.",
-		Image:            "https://i.imgur.com/mkpq1Zo.jpg",
-	})
+	catsFile, err := os.Open("cat/cats.gob")
+	if err != nil {
+		return
+	}
 
-	Pictures = append(Pictures, Picture{
-		Title:            "Rosie",
-		EmbedDescription: "Harry's Cat.",
-		Image:            "https://i.imgur.com/Yp6ngUn.jpg",
-	})
-
-	Pictures = append(Pictures, Picture{
-		Title:            "Mr. Pink",
-		EmbedDescription: "Jolyon's Cat.",
-		Image:            "https://i.imgur.com/g6mk02L.jpg",
-	})
-
-	Pictures = append(Pictures, Picture{
-		Title:            "Mr. Pink",
-		EmbedDescription: "Jolyon's Cat.",
-		Image:            "https://i.imgur.com/q0oVejo.jpg",
-	})
-
-	Pictures = append(Pictures, Picture{
-		Title:            "Mr. Pink",
-		EmbedDescription: "Jolyon's Cat.",
-		Image:            "https://i.imgur.com/0i1DqAu.jpg",
-	})
-
-	Pictures = append(Pictures, Picture{
-		Title:            "Ripple",
-		EmbedDescription: "Jolyon's Cat.",
-		Image:            "https://i.imgur.com/wxJd2xZ.jpg",
-	})
-
-	Pictures = append(Pictures, Picture{
-		Title:            "Ripple",
-		EmbedDescription: "Jolyon's Cat.",
-		Image:            "https://i.imgur.com/aCmnqHa.jpg",
-	})
-
-	Pictures = append(Pictures, Picture{
-		Title:            "Ripple",
-		EmbedDescription: "Jolyon's Cat.",
-		Image:            "https://i.imgur.com/mchYvlI.jpg",
-	})
+	err = gob.NewDecoder(catsFile).Decode(&Pictures)
+	return
 }
 
 func random(min, max int) int {
@@ -84,7 +47,7 @@ func random(min, max int) int {
 func Run(s *discordgo.Session, m *discordgo.MessageCreate) {
 	catPicture := Pictures[random(0, len(Pictures))]
 
-	s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
+	_, err := s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
 		Color: 0x00aaff,
 		Author: &discordgo.MessageEmbedAuthor{
 			Name:    m.Author.Username,
@@ -99,11 +62,15 @@ func Run(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Text: "Froogo Bot by Harry.",
 		},
 	})
+
+	if err != nil {
+		log.Printf("Cat sending embed message error: %v", err)
+	}
 }
 
 // Help runs the help command.
 func Help(s *discordgo.Session, m *discordgo.MessageCreate) {
-	s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
+	_, err := s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
 		Color: 0x003580,
 		Author: &discordgo.MessageEmbedAuthor{
 			Name:    m.Author.Username,
@@ -121,4 +88,8 @@ func Help(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Text: "Froogo Bot by Harry.",
 		},
 	})
+
+	if err != nil {
+		log.Printf("Cat sending help embed message error: %v", err)
+	}
 }

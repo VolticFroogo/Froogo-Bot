@@ -1,6 +1,7 @@
 package help
 
 import (
+	"log"
 	"strings"
 
 	"github.com/VolticFroogo/Froogo-Bot/cat"
@@ -36,7 +37,7 @@ func Run(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func help(s *discordgo.Session, m *discordgo.MessageCreate) {
-	s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
+	_, err := s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
 		Color: 0x003580,
 		Author: &discordgo.MessageEmbedAuthor{
 			Name:    m.Author.Username,
@@ -58,10 +59,14 @@ func help(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Text: "Froogo Bot by Harry.",
 		},
 	})
+
+	if err != nil {
+		log.Printf("Sending help embed message error: %v", err)
+	}
 }
 
 func unknownHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
-	s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
+	_, err := s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
 		Color: 0x003580,
 		Author: &discordgo.MessageEmbedAuthor{
 			Name:    m.Author.Username,
@@ -73,11 +78,15 @@ func unknownHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Text: "Froogo Bot by Harry.",
 		},
 	})
+
+	if err != nil {
+		log.Printf("Unknown help embed message error: %v", err)
+	}
 }
 
 // UnknownCommand is for a command that we don't know.
 func UnknownCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
-	s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
+	_, err := s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
 		Color: 0x003580,
 		Author: &discordgo.MessageEmbedAuthor{
 			Name:    m.Author.Username,
@@ -89,4 +98,8 @@ func UnknownCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Text: "Froogo Bot by Harry.",
 		},
 	})
+
+	if err != nil {
+		log.Printf("Unknown command embed message error: %v", err)
+	}
 }

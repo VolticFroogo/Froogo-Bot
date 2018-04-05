@@ -1,6 +1,9 @@
 package meme
 
 import (
+	"encoding/gob"
+	"log"
+	"os"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -23,24 +26,24 @@ var (
 )
 
 // Init sets the variables needed for the meme package and runs some initialization scripts.
-func Init(setPrefix string) {
+func Init(setPrefix string) (err error) {
 	prefix = setPrefix
 
 	Memes = make(map[string]Meme)
 
-	Memes[prefix+"meme no u"] = Meme{
-		Command:          prefix + "meme no u",
-		Title:            "No U",
-		Description:      "The No U trap card.",
-		EmbedDescription: "The No U trap card has been activated.",
-		Image:            "https://pics.me.me/trap-no-u-trap-card-ysii-en014-negate-the-effect-29426981.png",
-		Color:            0xB23C84,
+	memesFile, err := os.Open("meme/memes.gob")
+	if err != nil {
+		return
 	}
+
+	err = gob.NewDecoder(memesFile).Decode(&Memes)
+
+	return
 }
 
 // RunMeme runs the meme's embed message.
 func (meme Meme) RunMeme(s *discordgo.Session, m *discordgo.MessageCreate) {
-	s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
+	_, err := s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
 		Color: meme.Color,
 		Author: &discordgo.MessageEmbedAuthor{
 			Name:    m.Author.Username,
@@ -55,11 +58,15 @@ func (meme Meme) RunMeme(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Text: "Froogo Bot by Harry.",
 		},
 	})
+
+	if err != nil {
+		log.Printf("Sending meme embed message error: %v", err)
+	}
 }
 
 // Help runs the help command.
 func Help(s *discordgo.Session, m *discordgo.MessageCreate) {
-	s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
+	_, err := s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
 		Color: 0x003580,
 		Author: &discordgo.MessageEmbedAuthor{
 			Name:    m.Author.Username,
@@ -81,11 +88,15 @@ func Help(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Text: "Froogo Bot by Harry.",
 		},
 	})
+
+	if err != nil {
+		log.Printf("Sending help meme embed message error: %v", err)
+	}
 }
 
 // Run chooses the meme function to run and then runs it.
 func Run(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if meme, ok := Memes[strings.ToLower(m.Content)]; ok {
+	if meme, ok := Memes[strings.Trim(strings.ToLower(m.Content), prefix)]; ok {
 		meme.RunMeme(s, m) // Run the meme they asked for.
 		return
 	}
@@ -109,7 +120,7 @@ func list(s *discordgo.Session, m *discordgo.MessageCreate) {
 		list += Memes[meme].Title + ": " + Memes[meme].Description + "\n"
 	}
 
-	s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
+	_, err := s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
 		Color: 0x003580,
 		Author: &discordgo.MessageEmbedAuthor{
 			Name:    m.Author.Username,
@@ -121,10 +132,14 @@ func list(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Text: "Froogo Bot by Harry.",
 		},
 	})
+
+	if err != nil {
+		log.Printf("Listing meme embed message error: %v", err)
+	}
 }
 
 func unknownMeme(s *discordgo.Session, m *discordgo.MessageCreate) {
-	s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
+	_, err := s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
 		Color: 0x003580,
 		Author: &discordgo.MessageEmbedAuthor{
 			Name:    m.Author.Username,
@@ -136,4 +151,8 @@ func unknownMeme(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Text: "Froogo Bot by Harry.",
 		},
 	})
+
+	if err != nil {
+		log.Printf("Unknown meme embed message error: %v", err)
+	}
 }
