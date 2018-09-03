@@ -268,6 +268,41 @@ func main() {
 			EmbedDescription: "Cat's Cat.",
 			Image:            "https://i.imgur.com/U7Bo4uJ.jpg",
 		},
+		catPicture{
+			Title:            "Ben",
+			EmbedDescription: "Cat's Cat.",
+			Image:            "https://i.imgur.com/5ZR191T.jpg",
+		},
+		catPicture{
+			Title:            "Ben",
+			EmbedDescription: "Cat's Cat.",
+			Image:            "https://imgur.com/0h9z1Hq.jpg",
+		},
+		catPicture{
+			Title:            "Ben",
+			EmbedDescription: "Cat's Cat.",
+			Image:            "https://imgur.com/8AzW9jf.jpg",
+		},
+		catPicture{
+			Title:            "Ben",
+			EmbedDescription: "Cat's Cat.",
+			Image:            "https://imgur.com/RRjtYso.jpg",
+		},
+		catPicture{
+			Title:            "Ben",
+			EmbedDescription: "Cat's Cat.",
+			Image:            "https://imgur.com/vFhaStN.jpg",
+		},
+		catPicture{
+			Title:            "Ben",
+			EmbedDescription: "Cat's Cat.",
+			Image:            "https://i.imgur.com/UPjCcsr.jpg",
+		},
+		catPicture{
+			Title:            "Snoop",
+			EmbedDescription: "Connor's Cat.",
+			Image:            "https://i.imgur.com/a81Gb6O.jpg",
+		},
 	}
 
 	var catFile bytes.Buffer                            // Buffer that's saved to file.
@@ -285,8 +320,8 @@ func main() {
 
 	memes := make(map[string]meme)
 
-	memes["meme no u"] = meme{
-		Command:          "meme no u",
+	memes["no u"] = meme{
+		Command:          "no u",
 		Title:            "No U",
 		Description:      "The No U trap card.",
 		EmbedDescription: "The No U trap card has been activated.",

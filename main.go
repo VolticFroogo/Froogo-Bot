@@ -12,6 +12,8 @@ import (
 	"github.com/VolticFroogo/Froogo-Bot/cat"
 	"github.com/VolticFroogo/Froogo-Bot/help"
 	"github.com/VolticFroogo/Froogo-Bot/meme"
+	"github.com/VolticFroogo/Froogo-Bot/rage"
+	"github.com/VolticFroogo/Froogo-Bot/tron"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -90,6 +92,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			help.Run(s, m)
 		} else if strings.HasPrefix(strings.ToLower(m.Content), prefix+"cat") {
 			cat.Run(s, m)
+		} else if strings.HasPrefix(strings.ToLower(m.Content), prefix+"tron") {
+			tron.Run(s, m)
+		} else if strings.HasPrefix(strings.ToLower(m.Content), prefix+"rage") {
+			rage.Run(s, m)
 		} else {
 			help.UnknownCommand(s, m)
 		}

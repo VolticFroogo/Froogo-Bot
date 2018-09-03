@@ -96,7 +96,7 @@ func Help(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 // Run chooses the meme function to run and then runs it.
 func Run(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if meme, ok := Memes[strings.Trim(strings.ToLower(m.Content), prefix)]; ok {
+	if meme, ok := Memes[strings.Trim(strings.ToLower(m.Content), prefix+"meme ")]; ok {
 		meme.RunMeme(s, m) // Run the meme they asked for.
 		return
 	}
